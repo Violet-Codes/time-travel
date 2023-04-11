@@ -6,7 +6,7 @@ The two most important exports of this module are:
 
 ### useRefState
 ```ts
-// Like useState but provides a getState so that long living async blocks can access the state of the current cycle
+// Like useState but provides getState so that long living async blocks can access the state of the current cycle
 export function useRefState<S>(initialState: S | (() => S)): [S, React.Dispatch<React.SetStateAction<S>>, () => S];
 ```
 Usage:
