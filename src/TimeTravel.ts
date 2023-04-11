@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+// Starting at 0, gives the index of the current render cycle and allows for forced updating
 export function useCycle(): [number, () => void] {
     const cycle = useRef<number>(0);
     useEffect(() => { cycle.current += 1; });
@@ -10,6 +11,7 @@ export function useCycle(): [number, () => void] {
     return [cycle.current, doCycle];
 }
 
+// Like useState but provides a getState so that long living async blocks can access the state of the current cycle
 export function useRefState<S>(initialState: S | (() => S)): [S, React.Dispatch<React.SetStateAction<S>>, () => S] {
     const [state, setState] = useState<S>(initialState);
     const fresh = useRef<S | undefined>(undefined);
@@ -18,6 +20,7 @@ export function useRefState<S>(initialState: S | (() => S)): [S, React.Dispatch<
     return [state, setState, getState];
 }
 
+// Sends a message for a render cycle in the future to respond to
 export function useFuture<A, B>(): [undefined | ((f: (a: A) => B) => void), (a: A) => Promise<B>] {
     const [respond, setRespond] = useState<undefined | ((f: (a: A) => B) => void)>(undefined);
     const message = (a: A) => new Promise<B>(res =>
@@ -30,6 +33,8 @@ export function useFuture<A, B>(): [undefined | ((f: (a: A) => B) => void), (a: 
     );
     return [respond, message];
 }
+
+// Sends a queued message for a render cycle in the future to respond to
 export function useQueueFuture<A, B>(): [undefined | ((f: (a: A) => B) => void), (a: A) => Promise<B>] {
     const queue = useRef<((f: (a: A) => B) => void)[]>([]);
     const [respond, setRespond] = useState<undefined | ((f: (a: A) => B) => void)>(undefined);
@@ -58,6 +63,7 @@ export function useQueueFuture<A, B>(): [undefined | ((f: (a: A) => B) => void),
     return [respond, message];
 }
 
+// Sends an awaitable message for a render cycle in the future to respond to / wait for
 export function useMutualFuture<A, B>(): [(f: (a: A) => B) => Promise<void>, (a: A) => Promise<B>] {
     const messageQueue = useRef<[A, (b: B | PromiseLike<B>) => void][]>([]);
     const responseQueue = useRef<((a: A) => B)[]>([]);
