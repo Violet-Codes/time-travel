@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": false,
   "license": "MIT",
+  "scripts": {
+    "build": "tsc -d"
+  },
   "dependencies": {
     "@types/react": "^18.0.28",
     "react": "^18.2.0",
